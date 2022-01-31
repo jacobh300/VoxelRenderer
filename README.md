@@ -3,6 +3,7 @@ A Voxel Renderer/Engine created with OpenGL
 
 
 ![alt text](ChunkLoading01.gif)
+![alt text](ChunkLoading02.gif)
 
 
 
