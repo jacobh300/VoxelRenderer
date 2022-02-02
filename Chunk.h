@@ -3,15 +3,16 @@
 #include "Mesh.h"
 #include "Block.h"
 
-#include <future>
 class Chunk {
 
 
 private:
-	static const unsigned long chunkSize = 16;
-	static const unsigned long chunkHeight = 16;
+
 
 public:
+
+	static const unsigned long chunkSize = 16;
+	static const unsigned long chunkHeight = 16;
 	Chunk();
 	Chunk(glm::vec3 offset, Texture *tex);
 

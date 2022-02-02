@@ -4,6 +4,8 @@
 
 
 Chunk::Chunk(glm::vec3 offset, Texture *tex) {
+
+
 	offsetTranslation = glm::vec3(offset.x * chunkSize, offset.y * chunkHeight, offset.z * chunkSize);
 
 	for (int x = 0; x < chunkSize; x++) {
@@ -31,12 +33,10 @@ Chunk::Chunk() {
 		}
 	}
 
-	//Generate();
-
 }
 
 Chunk::~Chunk() {
-
+	mesh.~Mesh();
 }
 //Generates Mesh of the chunk based on blocks that are set to active.
 void Chunk::Generate() {
@@ -203,12 +203,6 @@ void Chunk::Generate() {
 						std::vector<GLuint> tempBottomInd(bottomInd, bottomInd + sizeof(bottomInd) / sizeof(GLuint));
 						ind.insert(ind.end(), tempBottomInd.begin(), tempBottomInd.end());
 					}
-
-
-
-					//std::vector<Texture> tex;
-					//tex.push_back(unwrapTexture);
-					//textures = tex;
 				}
 			}
 		}
@@ -218,6 +212,8 @@ void Chunk::Generate() {
 
 };
 
+
+//Generates the mesh of the chunk.
 void Chunk::GenerateMesh() {
 	Chunk::mesh = Mesh(vertices, ind, textures);
 }

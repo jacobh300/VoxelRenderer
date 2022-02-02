@@ -26,6 +26,7 @@ void Camera::updateMatrix(float FOVdeg, float nearPlane, float farPlane) {
 	cameraMatrix = projection * view;
 
 }
+
 void Camera::setHeight(int height) {
 	Camera::height = height;
 }

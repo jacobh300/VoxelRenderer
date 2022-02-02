@@ -60,12 +60,6 @@ int init() {
 	glfwSetWindowTitle(window, newTitle.c_str());
 }
 
-
-void task1(std::string msg) {
-	std::cout << "task1 says: " << msg << "\n";
-}
-
-
 int main()
 {
 	#pragma region Initialization
@@ -110,7 +104,6 @@ int main()
 
 	Time time = Time();
 
-	std::thread t1(task1, "hello");
 	bool draw = true;
 
 	Texture textures[] = {
@@ -150,7 +143,7 @@ int main()
 
 		// Draw the normal model
 		if (draw) {
-			chunkManager.Update(timeDiff,shaderProgram, camera);
+			chunkManager.Update(timeDiff, camera.Position,shaderProgram, camera);
 		}
 
 		//GUI Labels
@@ -160,6 +153,8 @@ int main()
 			ImGui::Checkbox("Draw", &draw);
 			// Text that appears in the window
 			ImGui::Text("Hello there adventurer!");
+
+			
 
 
 
@@ -247,7 +242,6 @@ int main()
 		glfwPollEvents();
 	}
 
-	t1.join(); //free thread
 	// Delete all the objects we've created
 	shaderProgram.Delete();
 	// Delete window before ending the program

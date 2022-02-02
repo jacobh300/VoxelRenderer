@@ -3,9 +3,7 @@
 
 #include<vector>
 #include"Chunk.h"
-#include <thread>
-#include<mutex>
-#include<future>
+
 
 
 class ChunkManager {
@@ -13,25 +11,23 @@ public:
 
 
 	ChunkManager();
+	ChunkManager(const ChunkManager& obj); 
 	Texture unwrapTexture = Texture("unwrap_helper.jpg", "diffuse", 0);
-	
-	//std::mutex mutex;
+
 	std::vector<Chunk> chunkList;
+
 	std::vector<Chunk> chunkLoadList;
+	std::vector<Chunk> chunkUnloadList;
+
 	std::vector<Chunk> meshLoadList;
 
-	std::vector<std::thread> generationThreadList;
+	bool chunkAtPos = false;
 
+	void Update(float deltaTime, glm::vec3 playerPosition, Shader& shader, Camera& camera);
 
-	int xIndex = 0;
-	int zIndex = 0;
-
-	void Update(float deltaTime, Shader& shader, Camera& camera);
-	void Generate();
-	void DrawChunks();
 	void initializeChunks();
 	void chunkGenTask(Chunk &chunk);
-	void GenerateAvailableChunk();
+
 };
 
 
