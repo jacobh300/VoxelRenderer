@@ -4,7 +4,7 @@
 
 ChunkManager::ChunkManager() {
 
-	ChunkManager::initializeChunks(); 
+	//ChunkManager::initializeChunks(); 
 }
 
 
@@ -15,21 +15,119 @@ ChunkManager::ChunkManager(const ChunkManager& obj) {
 
 
 
-void ChunkManager::chunkGenTask(Chunk &chunk) {
-	chunk.Generate();
-}
- 
+void ChunkManager::UpdateChunkList(glm::vec3 playerPosition) {
+
+	int radius = 8;
+
+	for (int x = - radius/2; x < radius/2; x++) {
+		for (int z = -radius / 2; z < radius / 2; z++) {
+
+			if(totalChunksLoaded < 30){
+
+				glm::vec3 pos = glm::round(playerPosition / 16.0f);
+				pos.x += 1 * x;
+				pos.y = 0;
+				pos.z += 1 * z;
+
+					Chunk* chunk = new Chunk(pos, &unwrapTexture);
+			
+					
+					
+					if (chunkList.empty()) {
+						
+				
+							chunkList.push_back(chunk); 
+							std::cout << chunk->offsetTranslation.x << ", " << chunk->offsetTranslation.y << ", " << chunk->offsetTranslation.z << std::endl;
+						
+					
+					
+					}
+					else{
+
+						std::vector<Chunk*>::iterator iter;
+
+						bool match = false;
+						for (int i = 0; i < chunkList.size(); i++) {
+
+							if (!chunkList.at(i)->isSetup) {
+								chunkSetupList.push_back(chunkList.at(i));
+							}
+
+							if (!chunkList.at(i)->loaded && chunkList.at(i)->isSetup) {
+								chunkLoadList.push_back(chunkList.at(i));
+							}
+
+							if (chunkList.at(i)->offsetTranslation == chunk->offsetTranslation) {
+								match = true;
+								delete chunk;
+							}
+						}
+
+						if (!match) { 
+							chunkList.push_back(chunk); 
+							std::cout << chunk->offsetTranslation.x << ", " << chunk->offsetTranslation.y << ", " << chunk->offsetTranslation.z << std::endl;
+						}
+	
+
+					}
+					
+			
+				
+					
+			
 
 
+					//chunkSetupList.push_back(chunk);
+					
 
-void ChunkManager::initializeChunks() {
 
-	for (int x = 0; x < 25; x++) {
-		for (int z = 0; z < 25; z++) {
-			Chunk chunk = Chunk(glm::vec3(x, 0, z), &unwrapTexture);
-			chunkLoadList.insert(chunkLoadList.begin(), chunk);
+					//totalChunksLoaded++;
+				
+			}
+
 		}
 	}
+
+
+
+}
+
+
+
+
+void ChunkManager::UpdateLoadList() {
+	std::vector<Chunk*>::iterator iter;
+
+	for (iter = chunkLoadList.begin(); iter != chunkLoadList.end(); iter++) {
+		Chunk* chunk = (*iter);
+
+		if (!chunk->loaded && chunk->isSetup == true && numOfChunksLoaded != chunksLoadedPerFrame) {
+			chunk->Load();
+			numOfChunksLoaded++;
+			std::cout << "loading" << std::endl;
+		}
+	
+	}
+
+
+
+	chunkLoadList.clear();
+}
+
+void ChunkManager::UpdateSetupList() {
+	std::vector<Chunk*>::iterator iter;
+
+	for (iter = chunkSetupList.begin(); iter != chunkSetupList.end(); iter++) {
+		Chunk* chunk = (*iter);
+
+		if(!chunk->isSetup && !chunk->loaded){
+			chunk->Setup();
+			std::cout << "setup" << std::endl;
+		}
+	
+	}
+
+	chunkSetupList.clear();
 }
 
 
@@ -37,63 +135,15 @@ void ChunkManager::initializeChunks() {
 void ChunkManager::Update(float deltaTime, glm::vec3 playerPosition, Shader& shader, Camera& camera) {
 	int radius = 10;
 
-	for (Chunk chunk : chunkLoadList) {
+	UpdateChunkList(playerPosition);
+	
+	UpdateLoadList();
+	UpdateSetupList();
 
-		if (chunk.offsetTranslation == glm::vec3(std::round(playerPosition.x/16), 0, std::round(playerPosition.z/16))) {
-			//std::cout << "chunk loading at location" << std::endl;
-			break;
-		}
-
+	for (Chunk* chunk : chunkList) {
+		chunk->DrawChunk(shader, camera);
 	}
 
-	for (Chunk chunk : chunkList) {
-		if (chunk.offsetTranslation == glm::vec3((std::round(playerPosition.x / 16) * 16 ) , 0, (std::round(playerPosition.z / 16) * 16))) {
-
-			//chunkAtPos == true;
-			//std::cout << "chunk at location" << std::endl;
-			break;
-		}
-
-		//chunkAtPos == false;
-
-
-	}
-
-
-
-	if (!chunkLoadList.empty()) {
-		chunkLoadList.at(0).Generate();
-		chunkLoadList.at(0).GenerateMesh();
-		chunkList.push_back(std::move( chunkLoadList.at(0)));
-		chunkLoadList.erase(chunkLoadList.begin());
-	}
-
-	if (!chunkUnloadList.empty()) {
-			chunkUnloadList.at(0).~Chunk();
-			chunkUnloadList.erase(chunkUnloadList.begin());
-		
-	}
-
-
-
-
-
-
-	for (int i = 0; i < chunkList.size(); i++) {
-
-		if (!chunkList.empty()) {
-
-			if (glm::distance(chunkList.at(i).offsetTranslation, playerPosition) > 1000) {
-				chunkUnloadList.push_back(std::move(chunkList.at(i)));
-				chunkList.erase(chunkList.begin() + i);
-			}
-			else {
-				glm::vec3 modTrans = chunkList.at(i).offsetTranslation;
-				modTrans.x -= 8;
-				modTrans.z -= 8;
-				chunkList.at(i).mesh.Draw(shader, camera, glm::mat4(1.0f), modTrans);
-			}
-		}
-	}
+	numOfChunksLoaded = 0;
 	
 }

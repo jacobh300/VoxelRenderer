@@ -3,49 +3,29 @@
 
 
 
+
+
 Chunk::Chunk(glm::vec3 offset, Texture *tex) {
-
-
 	offsetTranslation = glm::vec3(offset.x * chunkSize, offset.y * chunkHeight, offset.z * chunkSize);
-
-	for (int x = 0; x < chunkSize; x++) {
-		for (int y = 0; y < chunkHeight; y++) {
-			for (int z = 0; z < chunkSize; z++) {
-				Chunk::block[x][y][z].SetActive(true);
-			
-			}
-		}
-	}
-
-
 	textures.push_back(*tex);
 }
 
-
 Chunk::Chunk() {
-
-
-	for (int x = 0; x < chunkSize; x++) {
-		for (int y = 0; y < chunkHeight; y++) {
-			for (int z = 0; z < chunkSize; z++) {
-				Chunk::block[x][y][z].SetActive(true);
-			}
-		}
-	}
 
 }
 
 Chunk::~Chunk() {
 	mesh.~Mesh();
 }
+
+
+
 //Generates Mesh of the chunk based on blocks that are set to active.
-void Chunk::Generate() {
+void Chunk::Load() {
 
 	vertices.clear();
 	ind.clear();
 	//textures.clear();
-
-
 
 	float cubeSize = 0.5f;
 	int numOfVertices = 0;
@@ -208,9 +188,27 @@ void Chunk::Generate() {
 		}
 	}
 
+	GenerateMesh();
 
+	loaded = true;
 
 };
+
+void Chunk::Setup() {
+
+	for (int x = 0; x < chunkSize; x++) {
+		for (int y = 0; y < chunkHeight; y++) {
+			for (int z = 0; z < chunkSize; z++) {
+				//if ((std::rand() % 100) < 25)
+				Chunk::block[x][y][z].SetActive(true);
+			}
+		}
+	}
+
+	isSetup = true;
+
+
+}
 
 
 //Generates the mesh of the chunk.
@@ -219,6 +217,6 @@ void Chunk::GenerateMesh() {
 }
 
 
-void Chunk::DrawChunk() {
-
+void Chunk::DrawChunk(Shader& shader, Camera& camera) {
+	mesh.Draw(shader, camera, glm::mat4(1.0f), offsetTranslation );
 }

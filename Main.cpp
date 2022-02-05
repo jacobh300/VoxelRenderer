@@ -121,6 +121,7 @@ int main()
 
 		// Creates new title
 		std::string ms = std::to_string((timeDiff));
+		std::string fps = std::to_string((1/timeDiff));
 
 		// Resets times and counter
 		prevTime = crntTime;
@@ -141,10 +142,8 @@ int main()
 
 
 
-		// Draw the normal model
-		if (draw) {
-			chunkManager.Update(timeDiff, camera.Position,shaderProgram, camera);
-		}
+		chunkManager.Update(timeDiff, camera.Position, shaderProgram, camera);
+		
 
 		//GUI Labels
 		#pragma region ImGUI
@@ -159,12 +158,12 @@ int main()
 
 
 
-			if (chunkManager.chunkList.size() > 0) {
+			if (chunkManager.chunkRenderList.size() > 0) {
 
-				std::string numverts = "Number of verts: " + std::to_string(chunkManager.chunkList.size() * chunkManager.chunkList.at(0).mesh.vertices.size());
+				std::string numverts = "Number of verts: " + std::to_string(chunkManager.chunkRenderList.size() * chunkManager.chunkRenderList.at(0)->mesh.vertices.size());
 				ImGui::Text(numverts.c_str());
 
-				float memoryOfVerts = chunkManager.chunkList.size() * chunkManager.chunkList.at(0).mesh.vertices.size() * sizeof(Vertex);
+				float memoryOfVerts = chunkManager.chunkRenderList.size() * chunkManager.chunkRenderList.at(0)->mesh.vertices.size() * sizeof(Vertex);
 				std::string memverts = "Memory of verts: " + std::to_string(memoryOfVerts) + " bytes" + " (" + std::to_string(memoryOfVerts / 1000000) + " MB)";
 				ImGui::Text(memverts.c_str());
 			};
@@ -174,6 +173,9 @@ int main()
 
 			std::string frameTime = "Current Time between Frames: " + ms + "ms";
 			ImGui::Text(frameTime.c_str());
+
+			std::string fpsTime = "FPS: " + fps + "";
+			ImGui::Text(fpsTime.c_str());
 
 			std::string currentPosition = "Current Position" + std::to_string(camera.Position.x) + "\n" + std::to_string(camera.Position.y) + "\n" + std::to_string(camera.Position.z);
 			ImGui::Text(currentPosition.c_str());
@@ -201,25 +203,7 @@ int main()
 			std::string blockPosition = "Current Position" + std::to_string(camera.Position.x) + "\n" + std::to_string(camera.Position.y) + "\n" + std::to_string(camera.Position.z);
 			ImGui::Text(blockPosition.c_str());
 
-			static int blockX = 0.0f;
-			static int blockY = 0.0f;
-			static int blockZ = 0.0f;
 
-
-			ImGui::InputInt("Block x", &blockX, 1.0f, 1.0f, 0);
-
-
-
-			ImGui::InputInt("Block y", &blockY, 1.0f, 1.0f, 0);
-			
-
-
-			ImGui::InputInt("Block z", &blockZ, 1.0f, 1.0f, 0);
-
-			if (ImGui::Button("Delete Block")) {
-				//chunk.block[blockX][blockY][blockZ].SetActive(false);
-				//chunk.Generate();
-			};
 
 
 
